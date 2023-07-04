@@ -36,3 +36,50 @@ cards = [
         ],
     },
 ]
+
+current_card = {
+    "Owner": "",
+    "Number": "",
+    "Accounts": [],
+}
+
+
+def validate_card_nr(card_nr):
+    for card in cards:
+        if card["Number"] == card_nr:
+            return card_nr
+    return None
+
+
+def verify_pin(card_nr, pin):
+    for card in cards:
+        if card["Number"] == card_nr:
+            if card["PIN"] == pin:
+                return True
+    return False
+
+
+def fetch_accounts_data(card_nr):
+    for card in cards:
+        if card["Number"] == card_nr:
+            return [card["Accounts"], card["Owner"]]
+
+    return "Failed to retrieve information"
+
+
+mock_card = "3456789034567890"
+
+inserted_card = validate_card_nr(mock_card)
+if inserted_card:
+    current_card["Number"] = inserted_card
+    trials = 3
+    while trials > 0:
+        pin = input("Input PIN Code: ")
+        validated_pin = verify_pin(inserted_card, pin)
+        if validated_pin:
+            accounts_data = fetch_accounts_data(current_card["Number"])
+            current_card["Accounts"] = accounts_data[0]
+            current_card["Owner"] = accounts_data[1]
+            break
+        else:
+            trials -= 1
