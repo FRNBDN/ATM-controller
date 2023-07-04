@@ -3,6 +3,7 @@ from run import (
     validate_card_nr,
     verify_pin,
     fetch_accounts_data,
+    deposit,
 )
 
 
@@ -39,5 +40,18 @@ class TestATMController(unittest.TestCase):
         result = fetch_accounts_data(card_number)
         self.assertEqual(result[0], expected_accounts)
         self.assertEqual(result[1], expected_owner)
+
+    def test_deposit_valid_amount(self):
+        account = {"Name": "Checking", "Balance": 1500}
+        value_deposited = 100
+        deposit(account, value_deposited)
+        self.assertEqual(account["Balance"], 1600)
+
+    def test_deposit_invalid_amount(self):
+        account = {"Name": "Checking", "Balance": 1500}
+        value_deposited = -100
+        self.assertRaises(ValueError, deposit, account, value_deposited)
+        self.assertEqual(account["Balance"], 1500)
+
 if __name__ == "__main__":
     unittest.main()
