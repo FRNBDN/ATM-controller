@@ -79,13 +79,15 @@ def account_actions(account_idx, action):
     """
     account = current_card["Accounts"][int(account_idx)]
     if action == "Check Balance":
+        # Since the Balance is stored locally there is no
+        # need for a function.
         print(account["Balance"])
     elif action == "Deposit":
         deposit(account)
     elif action == "Withdraw":
         withdraw(account)
     else:
-        print("error")
+        raise ValueError("Invalid option")
     return account
 
 
@@ -118,7 +120,6 @@ def withdraw(account):
         raise ValueError("Insufficient funds")
 
     account["Balance"] -= value_withdrawn
-    print(account["Balance"])
     for prev_account in current_card["Accounts"]:
         if prev_account["Name"] == account["Name"]:
             prev_account["Balance"] = account["Balance"]
@@ -152,18 +153,16 @@ def main():
                 break
 
             trials -= 1
-        print("Choose Account")
         choices = []
         account_choice = ""
         for index, account in enumerate(current_card["Accounts"]):
             print(f"{index}: {account['Name']}")
             choices.append(str(index))
         while account_choice not in choices:
-            account_choice = input("")
+            account_choice = input("Choose Account:\n")
             if account_choice not in choices:
-                print("invalid input, try again")
-        print("Choose Action")
-        action_choice = input("")
+                raise ValueError("Invalid option")
+        action_choice = input("Choose Action:\n")
 
         account_actions(account_choice, action_choice)
         update_account()
