@@ -67,6 +67,40 @@ def fetch_accounts_data(card_nr):
     return "Failed to retrieve information"
 
 
+def account_actions(account_idx, action):
+    account = current_card["Accounts"][int(account_idx)]
+    if action == "Check Balance":
+        print(account["Balance"])
+    elif action == "Deposit":
+        deposit(account)
+    elif action == "Withdraw":
+        withdraw(account)
+    else:
+        print("error")
+
+
+def deposit(account):
+    value_deposited = int(input("Input value deposited to account: \n $"))
+    account["Balance"] += value_deposited
+    print(account["Balance"])
+    for prev_account in current_card["Accounts"]:
+        if prev_account["Name"] == account["Name"]:
+            prev_account["Balance"] = account["Balance"]
+
+
+def withdraw(account):
+    value_withdrawn = int(input("Input value you wish to withdraw: \n $"))
+    if value_withdrawn > account["Balance"]:
+        print("Insufficient Funds")
+
+    else:
+        account["Balance"] -= value_withdrawn
+        print(account["Balance"])
+        for prev_account in current_card["Accounts"]:
+            if prev_account["Name"] == account["Name"]:
+                prev_account["Balance"] = account["Balance"]
+
+
 mock_card = "3456789034567890"
 
 inserted_card = validate_card_nr(mock_card)
@@ -83,3 +117,18 @@ if inserted_card:
             break
         else:
             trials -= 1
+    print("Choose Account")
+    choices = []
+    account_choice = ""
+    for index, account in enumerate(current_card["Accounts"]):
+        print(f"{index}: {account['Name']}")
+        choices.append(str(index))
+    while account_choice not in choices:
+        account_choice = input("")
+        if account_choice not in choices:
+            print("invalid input, try again")
+    print("Choose Action")
+    action_choice = input("")
+
+    account_actions(account_choice, action_choice)
+    update_account()
