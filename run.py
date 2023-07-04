@@ -1,5 +1,3 @@
-"""ATM-controller Project"""
-
 CARDS = [  # Cards and details, as a mock API
     {
         "Owner": "John Doe",
@@ -26,9 +24,6 @@ current_card = {
     "Number": "",
     "Accounts": [],
 }
-
-MOCK_CARD = "3456789034567890"
-USER_INPUT_PIN = "9876"
 
 
 def validate_card_nr(card_nr):
@@ -71,59 +66,25 @@ def fetch_accounts_data(card_nr):
     return None
 
 
-def account_actions(account_idx, action):
-    """
-    Takes the user inputs of account and action and
-    calls function for the different actions for the
-    account.
-    """
-    account = current_card["Accounts"][int(account_idx)]
-    if action == "Check Balance":
-        # Since the Balance is stored locally there is no
-        # need for a function.
-        print(account["Balance"])
-    elif action == "Deposit":
-        deposit(account)
-    elif action == "Withdraw":
-        withdraw(account)
-    else:
-        raise ValueError("Invalid option")
-    return account
-
-
-def deposit(account):
+def deposit(account, value_deposited):
     """
     Function handling deposits, input value as a placeholder.
     """
-    try:
-        value_deposited = int(input("Input value deposited to account: \n $"))
-        if value_deposited <= 0:
-            raise ValueError("Invalid deposit amount")
-        account["Balance"] += value_deposited
-        for prev_account in current_card["Accounts"]:
-            if prev_account["Name"] == account["Name"]:
-                prev_account["Balance"] = account["Balance"]
-    except ValueError as e:
-        print(f"Error: {str(e)}")
-    return account
+    if value_deposited <= 0:
+        raise ValueError("Invalid deposit amount")
+    account["Balance"] += value_deposited
 
 
-def withdraw(account):
+def withdraw(account, value_withdrawn):
     """
     Function for withdrawing funds, checks if the account
     has the necessary funds before witdrawing.
     """
-    value_withdrawn = int(input("Input value you wish to withdraw: \n $"))
     if value_withdrawn <= 0:
         raise ValueError("Invalid withdrawal amount")
     if value_withdrawn > account["Balance"]:
         raise ValueError("Insufficient funds")
-
     account["Balance"] -= value_withdrawn
-    for prev_account in current_card["Accounts"]:
-        if prev_account["Name"] == account["Name"]:
-            prev_account["Balance"] = account["Balance"]
-    return account
 
 
 def update_account():
@@ -133,19 +94,19 @@ def update_account():
     """
     for card in CARDS:
         if card["Number"] == current_card["Number"]:
-            card = current_card
+            card.update(current_card)
 
 
 def main():
     """
     Main fuction running all program functions.
     """
-    inserted_card = validate_card_nr(MOCK_CARD)
+    inserted_card = validate_card_nr("3456789034567890")
     if inserted_card:
         current_card["Number"] = inserted_card
         trials = 3
         while trials > 0:
-            validate_pin = verify_pin(inserted_card, USER_INPUT_PIN)
+            validate_pin = verify_pin(inserted_card, "9876")
             if validate_pin:
                 accounts_data = fetch_accounts_data(current_card["Number"])
                 current_card["Accounts"] = accounts_data[0]
@@ -159,12 +120,23 @@ def main():
             print(f"{index}: {account['Name']}")
             choices.append(str(index))
         while account_choice not in choices:
-            account_choice = input("Choose Account:\n")
+            account_choice = "0"  # User input
             if account_choice not in choices:
                 raise ValueError("Invalid option")
-        action_choice = input("Choose Action:\n")
+        action_choice = "Check Balance"  # User input
 
-        account_actions(account_choice, action_choice)
+        selected_account = current_card["Accounts"][int(account_choice)]
+        if action_choice == "Check Balance":
+            print(selected_account["Balance"])
+        elif action_choice == "Deposit":
+            value_deposited = 100  # User input
+            deposit(selected_account, value_deposited)
+        elif action_choice == "Withdraw":
+            value_withdrawn = 200  # User input
+            withdraw(selected_account, value_withdrawn)
+        else:
+            raise ValueError("Invalid option")
+
         update_account()
 
 
