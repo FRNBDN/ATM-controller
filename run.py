@@ -101,7 +101,7 @@ def main():
     """
     Main fuction running all program functions.
     """
-    inserted_card = validate_card_nr("3456789034567890")
+    inserted_card = validate_card_nr("3456789034567890")  # Mock Card Input
     if inserted_card:
         current_card["Number"] = inserted_card
         trials = 3
@@ -140,4 +140,5 @@ def main():
         update_account()
 
 
-main()
+if __name__ == "__main__":
+    main()
